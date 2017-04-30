@@ -18,17 +18,16 @@ EBTNodeResult::Type UChooseNextWaypoint::ExecuteTask(UBehaviorTreeComponent& Own
 	}
 
 	// Get next waypoint index
-	const TArray<AActor*>& patrolPoints = patrolRoute->GetPatrolPoints();
 	int32 nextIndex = bbCpnt->GetValueAsInt(IndexKey.SelectedKeyName);
 
 	// Set next waypoint
-	if (ensure(nextIndex < patrolPoints.Num()))
+	const TArray<AActor*>& patrolPoints = patrolRoute->GetPatrolPoints();
+	if (patrolPoints.IsValidIndex(nextIndex))
 	{
 		bbCpnt->SetValueAsObject(WaypointKey.SelectedKeyName, patrolPoints[nextIndex]);
+		// Cycle waypoint index
+		bbCpnt->SetValueAsInt(IndexKey.SelectedKeyName, (nextIndex + 1) % patrolPoints.Num());
 	}
-
-	// Cycle waypoint index
-	bbCpnt->SetValueAsInt(IndexKey.SelectedKeyName, (nextIndex + 1) % patrolPoints.Num());
 
 	return EBTNodeResult::Succeeded;
 }
